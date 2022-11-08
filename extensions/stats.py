@@ -12,8 +12,6 @@ from naff import (
     Button,
     ButtonStyles,
     Embed,
-    Modal,
-    ShortText,
     Extension,
     MessageTypes,
     OptionTypes,
@@ -228,13 +226,7 @@ class stats(Extension):
                         choices.append({"name": f"{name}", "value": f"{name}"})
                         await ctx.send(choices=choices)
         except:
-            connection.close()
-    
-
-                for Name in cursor:
-                    choices.append({"name": f"{name}", "value": f"{name}"})
-                    await ctx.send(choices=choices)
-
+            connection.close()            
 
 def setup(bot):
     # This is called by dis-snek so it knows how to load the Extension
