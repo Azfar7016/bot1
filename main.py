@@ -23,7 +23,7 @@ if __name__ == "__main__":
         sync_interactions=True,  # sync application commands with discord
         delete_unused_application_cmds=True,  # Delete commands that arent listed here
         default_prefix="!",
-        debug_scope=812150001089118210,  # Override the commands scope, and only create them in this guild
+        debug_scope=984083803796561960,  # Override the commands scope, and only create them in this guild
     )
 
     # load the debug extension if that is wanted
