@@ -20,6 +20,7 @@ from utilities.checks import *
 
 load_dotenv()
 
+
 class setadmin(Extension):
     @slash_command(
         "set-admin",
@@ -125,7 +126,9 @@ class setadmin(Extension):
                         embed = Embed(title="User Promoted/Demoted", color=0x00FF00)
                         embed.add_field(name="New Rank:", value=rank, inline=True)
                         embed.add_field(
-                            name="Responsible Admin:", value=ctx.author.mention, inline=True
+                            name="Responsible Admin:",
+                            value=ctx.author.mention,
+                            inline=True,
                         )
                         embed.add_field(name="Reason:", value=reason, inline=False)
                         embed.set_author(
@@ -163,6 +166,7 @@ class setadmin(Extension):
                         )
         except:
             connection.close()
+
 
 def setup(bot):
     # This is called by dis-snek so it knows how to load the Scale

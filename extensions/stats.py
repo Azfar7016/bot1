@@ -29,6 +29,7 @@ from utilities.checks import *
 
 load_dotenv()
 
+
 class stats(Extension):
     @slash_command(
         "stats",
@@ -151,7 +152,6 @@ class stats(Extension):
                     )
                     # Bank
                     draw.text(
-
                         (450, 455),
                         f"${bank_money}",
                         (0, 0, 0),
@@ -205,7 +205,7 @@ class stats(Extension):
     @stats.autocomplete("name")
     async def stats_autocomplete(self, ctx: AutocompleteContext, name: str):
         choices = []
-        
+
         # Connect to the database
         connection = pymysql.connect(
             host=os.getenv("DATABASE_HOST"),
@@ -226,7 +226,8 @@ class stats(Extension):
                         choices.append({"name": f"{name}", "value": f"{name}"})
                         await ctx.send(choices=choices)
         except:
-            connection.close()            
+            connection.close()
+
 
 def setup(bot):
     # This is called by dis-snek so it knows how to load the Extension

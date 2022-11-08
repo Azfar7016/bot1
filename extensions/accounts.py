@@ -89,7 +89,9 @@ class accounts(Extension):
                         # send embed to ucp-logs
                         embed = Embed(title="New User Registered!", color=0x00FF00)
                         embed.add_field(name="Username:", value=user, inline=True)
-                        embed.add_field(name="Verify Code:", value=f"||{number}||", inline=True)
+                        embed.add_field(
+                            name="Verify Code:", value=f"||{number}||", inline=True
+                        )
                         embed.set_author(
                             name=f"{ctx.author.username}#{ctx.author.discriminator}",
                             url=f"https://discordapp.com/users/{ctx.author.id}",
@@ -148,8 +150,7 @@ class accounts(Extension):
                         )
         except:
             connection.close()
-        
-    
+
     @slash_command(
         "resend",
         description="Resend your UCP verification code to your dm's",
