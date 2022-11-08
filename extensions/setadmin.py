@@ -20,16 +20,6 @@ from utilities.checks import *
 
 load_dotenv()
 
-# Connect to the database
-connection = pymysql.connect(
-    host=os.getenv("DATABASE_HOST"),
-    user=os.getenv("DATABASE_USER"),
-    password=os.getenv("DATABASE_PASSWORD"),
-    database=os.getenv("DATABASE_NAME"),
-    cursorclass=pymysql.cursors.DictCursor,
-)
-
-
 class setadmin(Extension):
     @slash_command(
         "set-admin",
@@ -73,7 +63,16 @@ class setadmin(Extension):
         reason: Optional[str] = "No reason provided",
     ):
         await ctx.defer()
-        
+
+        # Connect to the database
+        connection = pymysql.connect(
+            host=os.getenv("DATABASE_HOST"),
+            user=os.getenv("DATABASE_USER"),
+            password=os.getenv("DATABASE_PASSWORD"),
+            database=os.getenv("DATABASE_NAME"),
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+
         if member.bot:
             embed = Embed(
                 description=f":x: You can't promote/demote discord bot!",
@@ -82,89 +81,88 @@ class setadmin(Extension):
             await ctx.send(embed=embed, ephemeral=True)
             return
 
-        # ping the mysql server
-        connection.ping(reconnect=True)
+        try:
+            with connection:
+                with connection.cursor() as cursor:
+                    # check if user is already registered
+                    sql = f"SELECT `DiscordID` FROM `accounts` WHERE `DiscordID`=%s"
+                    cursor.execute(sql, (member.id))
+                    result = cursor.fetchone()
 
-        with connection:
-            with connection.cursor() as cursor:
-                # check if user is already registered
-                sql = f"SELECT `DiscordID` FROM `accounts` WHERE `DiscordID`=%s"
-                cursor.execute(sql, (member.id))
-                result = cursor.fetchone()
+                    if result is not None:
+                        # get channel to send the logs
+                        w = self.bot.get_channel(1037665413183578143)
 
-                if result is not None:
-                    # get channel to send the logs
-                    w = self.bot.get_channel(1037665413183578143)
+                        # update records to database
+                        sql = "UPDATE `accounts` SET `Admin` = %s WHERE `accounts`.`DiscordID` = %s"
+                        cursor.execute(sql, (level, f"{member.id}"))
 
-                    # update records to database
-                    sql = "UPDATE `accounts` SET `Admin` = %s WHERE `accounts`.`DiscordID` = %s"
-                    cursor.execute(sql, (level, f"{member.id}"))
+                        # connection is not autocommit by default. So you must commit to save
+                        # your changes.
+                        connection.commit()
 
-                    # connection is not autocommit by default. So you must commit to save
-                    # your changes.
-                    connection.commit()
+                        # add level checks
+                        if level == 0:
+                            rank = "Player"
+                        if level == 1:
+                            rank = "Junior Helper"
+                        if level == 2:
+                            rank = "Senior Helper"
+                        if level == 3:
+                            rank = "Administrator"
+                        if level == 4:
+                            rank = "High Administrator"
+                        if level == 5:
+                            rank = "Supervisor"
+                        if level == 6:
+                            rank = "Management"
+                        if level == 7:
+                            rank = "Discord Manager"
+                        if level == 8:
+                            rank = "Developer"
 
-                    # add level checks
-                    if level == 0:
-                        rank = "Player"
-                    if level == 1:
-                        rank = "Junior Helper"
-                    if level == 2:
-                        rank = "Senior Helper"
-                    if level == 3:
-                        rank = "Administrator"
-                    if level == 4:
-                        rank = "High Administrator"
-                    if level == 5:
-                        rank = "Supervisor"
-                    if level == 6:
-                        rank = "Management"
-                    if level == 7:
-                        rank = "Discord Manager"
-                    if level == 8:
-                        rank = "Developer"
-
-                    # send embed to ucp-logs
-                    embed = Embed(title="User Promoted/Demoted", color=0x00FF00)
-                    embed.add_field(name="New Rank:", value=rank, inline=True)
-                    embed.add_field(
-                        name="Responsible Admin:", value=ctx.author.mention, inline=True
-                    )
-                    embed.add_field(name="Reason:", value=reason, inline=False)
-                    embed.set_author(
-                        name=f"{member.username}#{member.discriminator}",
-                        url=f"https://discordapp.com/users/{member.id}",
-                        icon_url=member.avatar.url,
-                    )
-                    embed.set_footer(
-                        text=f"{ctx.guild.name} | User ID: {member.id}",
-                        icon_url=ctx.guild.icon.url,
-                    )
-                    embed.timestamp = datetime.datetime.utcnow()
-                    await w.send(embed=embed)
-
-                    # notify user the changes
-                    try:
-                        await member.send(
-                            f"You have been promoted/demoted to `{rank}` by {ctx.author.mention}\nReason: {reason}"
+                        # send embed to ucp-logs
+                        embed = Embed(title="User Promoted/Demoted", color=0x00FF00)
+                        embed.add_field(name="New Rank:", value=rank, inline=True)
+                        embed.add_field(
+                            name="Responsible Admin:", value=ctx.author.mention, inline=True
                         )
+                        embed.add_field(name="Reason:", value=reason, inline=False)
+                        embed.set_author(
+                            name=f"{member.username}#{member.discriminator}",
+                            url=f"https://discordapp.com/users/{member.id}",
+                            icon_url=member.avatar.url,
+                        )
+                        embed.set_footer(
+                            text=f"{ctx.guild.name} | User ID: {member.id}",
+                            icon_url=ctx.guild.icon.url,
+                        )
+                        embed.timestamp = datetime.datetime.utcnow()
+                        await w.send(embed=embed)
+
+                        # notify user the changes
+                        try:
+                            await member.send(
+                                f"You have been promoted/demoted to `{rank}` by {ctx.author.mention}\nReason: {reason}"
+                            )
+                            await ctx.send(
+                                f"Successfully promoted/demoted {member.mention}\n\nI already notified the user about the changes.",
+                                ephemeral=True,
+                            )
+                        except:
+                            logging.info(f"Can't send message to {ctx.author} :(")
+                            await ctx.send(
+                                f"Successfully promoted/demoted {member.mention}\n\nUnfortunately i can't notify the user about the changes because their server dm's are closed :(",
+                                ephemeral=True,
+                            )
+                    else:
+                        # send error message if user is not found
                         await ctx.send(
-                            f"Successfully promoted/demoted {member.mention}\n\nI already notified the user about the changes.",
+                            "Invalid user!",
                             ephemeral=True,
                         )
-                    except:
-                        logging.info(f"Can't send message to {ctx.author} :(")
-                        await ctx.send(
-                            f"Successfully promoted/demoted {member.mention}\n\nUnfortunately i can't notify the user about the changes because their server dm's are closed :(",
-                            ephemeral=True,
-                        )
-                else:
-                    # send error message if user already registered
-                    await ctx.send(
-                        "Invalid user!",
-                        ephemeral=True,
-                    )
-
+        except:
+            connection.close()
 
 def setup(bot):
     # This is called by dis-snek so it knows how to load the Scale
