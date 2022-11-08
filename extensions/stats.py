@@ -60,7 +60,7 @@ class stats(Extension):
         with connection:
             with connection.cursor() as cursor:
                 # check if character is already registered
-                sql = f"SELECT * FROM `characters` WHERE `Name`=%s"
+                sql = f"SELECT * FROM `characters` WHERE `Character`=%s"
                 cursor.execute(sql, (name))
                 result = cursor.fetchone()
 
@@ -71,26 +71,26 @@ class stats(Extension):
                     )
                 else:
                     # define things we want to use
-                    name = result["Name"]
+                    name = result["Character"]
 
                     health = int(result["Health"])
                     if health == 0:
                         health = "Player is dead"
 
-                    armor = int(result["Armor"])
+                    armor = int(result["ArmorStatus"])
                     if armor == 0:
                         armor = "No Armor"
                     else:
                         armor = f"{armor}%"
 
-                    ucp = result["UCP"]
+                    ucp = result["Username"]
 
-                    age = result["Age"]
+                    age = result["Birthdate"]
 
                     origin = result["Origin"]
 
                     gender = result["Gender"]
-                    if gender == 0:
+                    if gender == 1:
                         gender = "Male"
                     else:
                         gender = "Female"
@@ -100,11 +100,7 @@ class stats(Extension):
                     pocket_money = prettify(result["Money"])
                     bank_money = prettify(result["BankMoney"])
 
-                    level = result["Level"]
-
-                    time_hour = result["Hours"]
                     time_min = result["Minutes"]
-                    time_sec = result["Second"]
 
                 # Replace blanko.png with your background image.
                 img = Image.open("assets/blanko.png")
@@ -116,7 +112,7 @@ class stats(Extension):
                 #    (x,y)::↓ ↓ ↓ (text)::↓ ↓     (r,g,b)::↓ ↓ ↓
                 async with aiohttp.ClientSession() as session:
                     async with session.get(
-                        f"https://assets.open.mp/assets//images/skins/{skin}.png"
+                        f"https://gta.com.ua/img/articles/sa/sa-mp/skins-id/skin_{skin}.png"
                     ) as response:
                         image = await response.read()
                 avatar = (
@@ -158,6 +154,7 @@ class stats(Extension):
                 )
                 # Bank
                 draw.text(
+
                     (450, 455),
                     f"${bank_money}",
                     (0, 0, 0),
@@ -166,7 +163,7 @@ class stats(Extension):
                 # Ingame Time
                 draw.text(
                     (450, 505),
-                    f"{time_hour} JAM | {time_min} MENIT | {time_hour} DETIK",
+                    f"{time_min} MENIT",
                     (0, 0, 0),
                     font=values,
                 )
@@ -216,132 +213,12 @@ class stats(Extension):
         with connection:
             with connection.cursor() as cursor:
                 # check if character is already registered
-                sql = f"SELECT `Name` FROM `characters` WHERE `Name`=%s"
+                sql = f"SELECT `Character` FROM `characters` WHERE `Character`=%s"
                 cursor.execute(sql, (name))
 
                 for Name in cursor:
                     choices.append({"name": f"{name}", "value": f"{name}"})
                     await ctx.send(choices=choices)
-
-    # leaderboards systems
-
-    @slash_command(
-        name="leaderboards",
-        description="Show server leaderboards",
-        group_name="rich",
-        group_description="Richest leaderboards",
-        sub_cmd_name="wallet",
-        sub_cmd_description="Show richest characters wallet in this server",
-    )
-    async def lb_wallet_rich(self, ctx):
-        # need to be deferred, otherwise it will be failed
-        await ctx.defer()
-
-        # ping the mysql server
-        connection.ping(reconnect=True)
-
-        with connection:
-            with connection.cursor() as cursor:
-                # check if character is already registered
-                sql = f"SELECT * FROM characters ORDER BY Money DESC LIMIT 5;"
-                cursor.execute(sql)
-                result = cursor.fetchall()
-
-                # create the embed
-                embed = Embed(
-                    title="Server Leaderboards",
-                    description="Richest characters wallet in this server",
-                    color=0x00FF00,
-                )
-
-                # add the top 10 richest characters
-                for i in result:
-                    embed.add_field(
-                        name=f"{i['Name']}",
-                        value=f"${i['Money']}",
-                        inline=False,
-                    )
-
-                # send the embed
-                await ctx.send(embed=embed)
-
-    @slash_command(
-        name="leaderboards",
-        description="Show server leaderboards",
-        group_name="rich",
-        group_description="Richest leaderboards",
-        sub_cmd_name="bank",
-        sub_cmd_description="Show richest characters bank account in this server",
-    )
-    async def lb_bank_rich(self, ctx):
-        # need to be deferred, otherwise it will be failed
-        await ctx.defer()
-
-        # ping the mysql server
-        connection.ping(reconnect=True)
-
-        with connection:
-            with connection.cursor() as cursor:
-                # check if character is already registered
-                sql = f"SELECT * FROM characters ORDER BY BankMoney DESC LIMIT 5;"
-                cursor.execute(sql)
-                result = cursor.fetchall()
-
-                # create the embed
-                embed = Embed(
-                    title="Server Leaderboards",
-                    description="Richest characters bank money in this server",
-                    color=0x00FF00,
-                )
-
-                # add the top 10 richest characters
-                for i in result:
-                    embed.add_field(
-                        name=f"{i['Name']}",
-                        value=f"${i['BankMoney']}",
-                        inline=False,
-                    )
-
-                # send the embed
-                await ctx.send(embed=embed)
-
-    @slash_command(
-        name="leaderboards",
-        description="Show server leaderboards",
-        sub_cmd_name="level",
-        sub_cmd_description="Show highest level in this server",
-    )
-    async def lb_level(self, ctx):
-        # need to be deferred, otherwise it will be failed
-        await ctx.defer()
-
-        # ping the mysql server
-        connection.ping(reconnect=True)
-
-        with connection:
-            with connection.cursor() as cursor:
-                # check if character is already registered
-                sql = f"SELECT * FROM characters ORDER BY Level DESC LIMIT 5;"
-                cursor.execute(sql)
-                result = cursor.fetchall()
-
-                # create the embed
-                embed = Embed(
-                    title="Server Leaderboards",
-                    description="Highest Character Level in this server",
-                    color=0x00FF00,
-                )
-
-                # add the top 10 richest characters
-                for i in result:
-                    embed.add_field(
-                        name=f"{i['Name']}",
-                        value=f"Level {i['Level']}",
-                        inline=False,
-                    )
-
-                # send the embed
-                await ctx.send(embed=embed)
 
 
 def setup(bot):
