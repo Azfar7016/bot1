@@ -22,3 +22,20 @@ def member_permissions(*permissions: Permissions) -> TYPE_CHECK_FUNCTION:
             return True
 
     return check
+
+
+def ucpname(name):
+    """
+    Check a user UCP Name.
+
+    Args:
+        *name: The Username to check for
+    """
+    regex = r"^[a-zA-Z0-9]{3,15}$"
+    p = re.compile(regex)
+    if(name == None):
+        return False
+    if(re.search(p, name)):
+        return True
+    else:
+        return False

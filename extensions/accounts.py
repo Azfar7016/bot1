@@ -18,6 +18,7 @@ from naff import (
     ShortText,
 )
 
+from utilities.checks import *
 import random
 
 load_dotenv()
@@ -66,6 +67,15 @@ class accounts(Extension):
                         modal_ctx: ModalContext = await self.bot.wait_for_modal(
                             my_modal
                         )
+
+                        # regex check
+                        crosschecking = ucpname(modal_ctx.responses["username"])
+
+                        if crosschecking is False:
+                            return await modal_ctx.send(
+                                "Username yang kamu masukkan tidak valid, silahkan coba lagi.", 
+                                ephemeral=True
+                            )
 
                         # get channel to send the logs
                         w = self.bot.get_channel(1037665413183578143)
