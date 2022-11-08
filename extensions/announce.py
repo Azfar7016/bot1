@@ -1,6 +1,7 @@
 # Credits to Discord-Snake-Pit/Dis-secretary
 
 from naff.models import Extension, GuildNews, Message, listen
+import logging
 
 
 class announce(Extension):
@@ -11,10 +12,10 @@ class announce(Extension):
             try:
                 await message.publish()
             except Exception:
-                print("publish failed")
+                logging.warn("message publish failed")
                 pass
             else:
-                print("publish succeeded")
+                logging.info("message publish succeeded")
 
 
 def setup(bot):
