@@ -50,11 +50,12 @@ class setadmin(Extension):
             SlashCommandChoice(name="Player", value=0),
             SlashCommandChoice(name="Junior Helper", value=1),
             SlashCommandChoice(name="Senior Helper", value=2),
-            SlashCommandChoice(name="Admin Level 1", value=3),
-            SlashCommandChoice(name="Admin Level 2", value=4),
-            SlashCommandChoice(name="Admin Level 3", value=5),
-            SlashCommandChoice(name="Management (setara founder)", value=6),
-            SlashCommandChoice(name="Founder", value=7),
+            SlashCommandChoice(name="Administrator", value=3),
+            SlashCommandChoice(name="High Administrator", value=4),
+            SlashCommandChoice(name="Supervisor", value=5),
+            SlashCommandChoice(name="Management", value=6),
+            SlashCommandChoice(name="Discord Manager", value=7),
+            SlashCommandChoice(name="Developer", value=8),
         ],
     )
     @slash_option(
@@ -71,7 +72,8 @@ class setadmin(Extension):
         level: int,
         reason: Optional[str] = "No reason provided",
     ):
-
+        await ctx.defer()
+        
         if member.bot:
             embed = Embed(
                 description=f":x: You can't promote/demote discord bot!",
@@ -86,16 +88,16 @@ class setadmin(Extension):
         with connection:
             with connection.cursor() as cursor:
                 # check if user is already registered
-                sql = f"SELECT `discord_userid` FROM `playerucp` WHERE `discord_userid`=%s"
+                sql = f"SELECT `DiscordID` FROM `accounts` WHERE `DiscordID`=%s"
                 cursor.execute(sql, (member.id))
                 result = cursor.fetchone()
 
                 if result is not None:
                     # get channel to send the logs
-                    w = self.bot.get_channel(966685759832723476)
+                    w = self.bot.get_channel(1037665413183578143)
 
                     # update records to database
-                    sql = "UPDATE `playerucp` SET `Admin` = %s WHERE `playerucp`.`discord_userid` = %s"
+                    sql = "UPDATE `accounts` SET `Admin` = %s WHERE `accounts`.`DiscordID` = %s"
                     cursor.execute(sql, (level, f"{member.id}"))
 
                     # connection is not autocommit by default. So you must commit to save
@@ -110,15 +112,17 @@ class setadmin(Extension):
                     if level == 2:
                         rank = "Senior Helper"
                     if level == 3:
-                        rank = "Admin Level 1"
+                        rank = "Administrator"
                     if level == 4:
-                        rank = "Admin Level 2"
+                        rank = "High Administrator"
                     if level == 5:
-                        rank = "Admin Level 3"
+                        rank = "Supervisor"
                     if level == 6:
                         rank = "Management"
                     if level == 7:
-                        rank = "Founder"
+                        rank = "Discord Manager"
+                    if level == 8:
+                        rank = "Developer"
 
                     # send embed to ucp-logs
                     embed = Embed(title="User Promoted/Demoted", color=0x00FF00)
