@@ -1,16 +1,16 @@
 version: "3.9"
 
 services:
-  luxinity-ucp:
+  bot-clavaria:
     build:
       context: ./
       dockerfile: ./Dockerfile
     volumes:
       - ./logs:/app/logs
     networks:
-      - luxinity-ucp-network
+      - bot-clavaria-network
     restart:
       always
 
 networks:
-  luxinity-ucp-network:
+  bot-clavaria-network:

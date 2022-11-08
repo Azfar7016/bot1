@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  bot:
+  bot-clavaria:
     restart: on-failure
-    image: ghcr.io/luxinity-roleplay/bot:master
+    image: ghcr.io/gnztmpz/bot-clavaria:master
     env_file: .env
