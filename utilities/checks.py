@@ -33,9 +33,9 @@ def ucpname(name):
     """
     regex = r"^[a-zA-Z0-9]{3,15}$"
     p = re.compile(regex)
-    if(name == None):
+    if name == None:
         return False
-    if(re.search(p, name)):
+    if re.search(p, name):
         return True
     else:
         return False

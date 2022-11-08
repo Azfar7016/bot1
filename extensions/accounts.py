@@ -73,8 +73,8 @@ class accounts(Extension):
 
                         if crosschecking is False:
                             return await modal_ctx.send(
-                                "Username yang kamu masukkan tidak valid, silahkan coba lagi.", 
-                                ephemeral=True
+                                "Username yang kamu masukkan tidak valid, silahkan coba lagi.",
+                                ephemeral=True,
                             )
 
                         # get channel to send the logs
