@@ -1,16 +1,16 @@
 version: "3.9"
 
 services:
-  bot-clavaria:
+  bot:
     build:
       context: ./
       dockerfile: ./Dockerfile
     volumes:
       - ./logs:/app/logs
     networks:
-      - bot-clavaria-network
+      - bot-network
     restart:
       always
 
 networks:
-  bot-clavaria-network:
+  bot-network:

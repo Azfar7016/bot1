@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  bot-clavaria:
+  bot:
     restart: on-failure
-    image: ghcr.io/gnztmpz/bot-clavaria:master
+    image: ghcr.io/clavaria-roleplay/bot:master
     env_file: .env
