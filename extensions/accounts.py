@@ -291,8 +291,10 @@ class accounts(Extension):
                                 my_modal
                             )
                             # hash passwords
-                            modal_password = modal_ctx.responses["password"].encode("utf8")
-                            
+                            modal_password = modal_ctx.responses["password"].encode(
+                                "utf8"
+                            )
+
                             salt = bcrypt.gensalt()
                             hashed = bcrypt.hashpw(modal_password, salt)
 
@@ -300,15 +302,21 @@ class accounts(Extension):
                             sql_upd = f"UPDATE `accounts` SET `Password`=%s, `Salt`=%s WHERE `DiscordID`=%s"
                             cursor.execute(sql_upd, (hashed, salt, ctx.author.id))
                             connection.commit()
-                            
+
                             # get channel to send the logs
                             w = self.bot.get_channel(1037665413183578143)
 
                             # send this event to the ucp log channel
-                            embed = Embed(title="Player Password changed!", color=0x00FF00)
-                            embed.add_field(name="Username:", value=result["Username"], inline=True)
+                            embed = Embed(
+                                title="Player Password changed!", color=0x00FF00
+                            )
                             embed.add_field(
-                                name="New Password:", value=f"||{modal_ctx.responses['password']}||", inline=True
+                                name="Username:", value=result["Username"], inline=True
+                            )
+                            embed.add_field(
+                                name="New Password:",
+                                value=f"||{modal_ctx.responses['password']}||",
+                                inline=True,
                             )
                             embed.set_author(
                                 name=f"{ctx.author.username}#{ctx.author.discriminator}",
@@ -328,7 +336,9 @@ class accounts(Extension):
                                 description="**Your New Password**", color=0x17A168
                             )
                             manusya.add_field(
-                                name="Password:", value=f"||{modal_ctx.responses['password']}||", inline=True
+                                name="Password:",
+                                value=f"||{modal_ctx.responses['password']}||",
+                                inline=True,
                             )
                             try:
                                 await ctx.author.send(embed=manusya)
@@ -357,6 +367,7 @@ class accounts(Extension):
                         )
         except:
             connection.close()
+
 
 def setup(bot):
     # This is called by dis-snek so it knows how to load the Scale

@@ -1,3 +1,4 @@
+bcrypt
 millify
 naff
 orjson
@@ -5,4 +6,3 @@ pillow
 PyMySQL
 python-dotenv
 samp-client
-bcrypt
