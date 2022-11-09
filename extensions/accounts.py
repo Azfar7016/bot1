@@ -70,10 +70,20 @@ class accounts(Extension):
 
                         # regex check
                         crosschecking = ucpname(modal_ctx.responses["username"])
-
                         if crosschecking is False:
                             return await modal_ctx.send(
                                 "Username yang kamu masukkan tidak valid, silahkan coba lagi.",
+                                ephemeral=True,
+                            )
+                        
+                        # check if username is already registered
+                        doublename = f"SELECT * FROM `accounts` WHERE `Username`=%s"
+                        cursor.execute(doublename, (modal_ctx.responses["username"]))
+                        doublename_checks = cursor.fetchone()
+                        
+                        if doublename_checks is not None:
+                            return await modal_ctx.send(
+                                "Username yang kamu masukkan sudah terdaftar, silahkan coba lagi.",
                                 ephemeral=True,
                             )
 
@@ -121,6 +131,10 @@ class accounts(Extension):
                         await ctx.author.add_role(
                             verified_id,
                             f"{user} just Registered, gave'em the Verified role..",
+                        )
+                        await ctx.author.edit(
+                            nickname=f"{user}",
+                            reason=f"{user} just Registered, changed their nickname..",
                         )
                         await ctx.author.remove_role(
                             unverified_id,
