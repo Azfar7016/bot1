@@ -20,6 +20,7 @@ from naff import (
 
 from utilities.checks import *
 import random
+import bcrypt
 
 load_dotenv()
 
@@ -245,11 +246,109 @@ class accounts(Extension):
         except:
             connection.close()
 
+    @slash_command(
+        "reset-password",
+        description="Reset your UCP password",
+    )
+    async def reset_pw(
+        self,
+        ctx,
+    ):
+        try:
+            # Connect to the database
+            connection = pymysql.connect(
+                host=os.getenv("DATABASE_HOST"),
+                user=os.getenv("DATABASE_USER"),
+                password=os.getenv("DATABASE_PASSWORD"),
+                database=os.getenv("DATABASE_NAME"),
+                cursorclass=pymysql.cursors.DictCursor,
+            )
+            with connection:
+                with connection.cursor() as cursor:
+                    # check if user is already registered
+                    sql = f"SELECT * FROM `accounts` WHERE `DiscordID`=%s"
+                    cursor.execute(sql, (ctx.author.id))
+                    result = cursor.fetchone()
+
+                    if result is not None:
+                        if result["Password"] and result["Salt"] is not None:
+                            # send modals
+                            my_modal = Modal(
+                                title="Forgot Password",
+                                components=[
+                                    ShortText(
+                                        label="Password",
+                                        custom_id="password",
+                                        placeholder="Masukkan Password Baru",
+                                        required=True,
+                                    ),
+                                ],
+                            )
+                            await ctx.send_modal(modal=my_modal)  # send modal to users
+
+                            # wait for user to enter the credentials
+                            modal_ctx: ModalContext = await self.bot.wait_for_modal(
+                                my_modal
+                            )
+                            # hash passwords
+                            modal_password = modal_ctx.responses["password"].encode("utf8")
+                            
+                            salt = bcrypt.gensalt()
+                            hashed = bcrypt.hashpw(modal_password, salt)
+
+                            # update database
+                            sql_upd = f"UPDATE `accounts` SET `Password`=%s, `Salt`=%s WHERE `DiscordID`=%s"
+                            cursor.execute(sql_upd, (hashed, salt, ctx.author.id))
+                            connection.commit()
+                            
+                            # get channel to send the logs
+                            w = self.bot.get_channel(1037665413183578143)
+
+                            # send this event to the ucp log channel
+                            embed = Embed(title="Player Password changed!", color=0x00FF00)
+                            embed.add_field(name="Username:", value=result["Username"], inline=True)
+                            embed.add_field(
+                                name="New Password:", value=f"||{modal_ctx.responses['password']}||", inline=True
+                            )
+                            embed.set_author(
+                                name=f"{ctx.author.username}#{ctx.author.discriminator}",
+                                url=f"https://discordapp.com/users/{ctx.author.id}",
+                                icon_url=ctx.author.avatar.url,
+                            )
+                            embed.set_thumbnail(url=ctx.author.avatar.url)
+                            embed.set_footer(
+                                text=f"{ctx.guild.name} | User ID: {ctx.author.id}",
+                                icon_url=ctx.guild.icon.url,
+                            )
+                            embed.timestamp = datetime.datetime.utcnow()
+                            await w.send(embed=embed)
+
+                            # send their new password to their dm's
+                            manusya = Embed(
+                                description="**Your New Password**", color=0x17A168
+                            )
+                            manusya.add_field(
+                                name="Password:", value=f"||{modal_ctx.responses['password']}||", inline=True
+                            )
+                            try:
+                                await ctx.author.send(embed=manusya)
+                                await modal_ctx.send(
+                                    "Your new password has been sent, Check your DM's!",
+                                    ephemeral=True,
+                                )
+                            except:
+                                logging.warn(f"Can't send message to {ctx.author} :(")
+                                await modal_ctx.send(
+                                    "Your server dm's still closed and we can't send your new password to you. Please open your server dm's and try again.",
+                                    ephemeral=True,
+                                )
+                            # send modal responses
+                        else:
+                            # send error message if user already registered
                             await ctx.send(
-                                "Your server dm's still closed and we can't send your username & verification code to you. Please open your server dm's and try again.",
+                                "You're not verified yet, login to ingame and verify your account first!",
                                 ephemeral=True,
                             )
-                        # send modal responses
                     else:
                         # send error message if user already registered
                         await ctx.send(
@@ -258,7 +357,6 @@ class accounts(Extension):
                         )
         except:
             connection.close()
-
 
 def setup(bot):
     # This is called by dis-snek so it knows how to load the Scale
