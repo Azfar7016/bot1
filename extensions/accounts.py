@@ -75,12 +75,12 @@ class accounts(Extension):
                                 "Username yang kamu masukkan tidak valid, silahkan coba lagi.",
                                 ephemeral=True,
                             )
-                        
+
                         # check if username is already registered
                         doublename = f"SELECT * FROM `accounts` WHERE `Username`=%s"
                         cursor.execute(doublename, (modal_ctx.responses["username"]))
                         doublename_checks = cursor.fetchone()
-                        
+
                         if doublename_checks is not None:
                             return await modal_ctx.send(
                                 "Username yang kamu masukkan sudah terdaftar, silahkan coba lagi.",
