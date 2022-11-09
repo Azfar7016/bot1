@@ -201,29 +201,50 @@ class accounts(Extension):
                     result = cursor.fetchone()
 
                     if result is not None:
-                        # send username & verification code to user for safekeeping
-                        user = result["Username"]
-                        number = result["VerifyCode"]
+                        if result["Password"] and result["Salt"] is None:
+                            # send username & verification code to user for safekeeping
+                            user = result["Username"]
+                            number = result["VerifyCode"]
 
-                        manusya = Embed(
-                            description="**Your New UCP Account**", color=0x17A168
-                        )
-                        manusya.add_field(
-                            name="Username:", value=f"||{user}||", inline=True
-                        )
-                        manusya.add_field(
-                            name="Verification Code:",
-                            value=f"||{number}||",
-                            inline=False,
-                        )
-                        try:
-                            await ctx.author.send(embed=manusya)
+                            manusya = Embed(
+                                description="**Your New UCP Account**", color=0x17A168
+                            )
+                            manusya.add_field(
+                                name="Username:", value=f"||{user}||", inline=True
+                            )
+                            manusya.add_field(
+                                name="Verification Code:",
+                                value=f"||{number}||",
+                                inline=False,
+                            )
+                            try:
+                                await ctx.author.send(embed=manusya)
+                                await ctx.send(
+                                    "Your username & verification code has been re-sended, Check your DM's!",
+                                    ephemeral=True,
+                                )
+                            except:
+                                logging.warn(f"Can't send message to {ctx.author} :(")
+                                await ctx.send(
+                                    "Your server dm's still closed and we can't send your username & verification code to you. Please open your server dm's and try again.",
+                                    ephemeral=True,
+                                )
+                            # send modal responses
+                        else:
+                            # send error message if user already verified
                             await ctx.send(
-                                "Your username & verification code has been re-sended, Check your DM's!",
+                                "You're already registered and verified!",
                                 ephemeral=True,
                             )
-                        except:
-                            logging.warn(f"Can't send message to {ctx.author} :(")
+                    else:
+                        # send error message if user is not registered
+                        await ctx.send(
+                            "You're not registered yet! Please use </register:1039400721319198741> to register.",
+                            ephemeral=True,
+                        )
+        except:
+            connection.close()
+
                             await ctx.send(
                                 "Your server dm's still closed and we can't send your username & verification code to you. Please open your server dm's and try again.",
                                 ephemeral=True,
