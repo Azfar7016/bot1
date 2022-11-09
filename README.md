@@ -1,6 +1,6 @@
 # Clavaria Helper Discord Bot
 
-[![Discord server](https://img.shields.io/discord/984083803796561960?label=Join%20our%20Discord%20Server%21)](https://discord.gg/d4RCAhwAMr) [![Build Production](https://github.com/GNZTMPZ/BOT-CLAVARIA/actions/workflows/build.yml/badge.svg)](https://github.com/GNZTMPZ/BOT-CLAVARIA/actions/workflows/build.yml) [![precommit-action](https://github.com/GNZTMPZ/BOT-CLAVARIA/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/GNZTMPZ/BOT-CLAVARIA/actions/workflows/pre-commit.yml) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Discord server](https://img.shields.io/discord/984083803796561960?label=Join%20our%20Discord%20Server%21)](https://discord.gg/d4RCAhwAMr) [![Build Production](https://github.com/Clavaria-Roleplay/bot/actions/workflows/build.yml/badge.svg)](https://github.com/Clavaria-Roleplay/bot/actions/workflows/build.yml) [![precommit-action](https://github.com/Clavaria-Roleplay/bot/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/Clavaria-Roleplay/bot/actions/workflows/pre-commit.yml) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Clavaria Roleplay Discord Server Bots & UCP System made with [NAFF](https://github.com/NAFTeam/NAFF).
 
@@ -15,7 +15,6 @@ Kunjungi [panduan resmi NAFF](https://naff.info/Guides/01%20Getting%20Started.ht
 - Resend your verification code
 - Reset your own password
 - and more features to add, still wip though
-
 
 #### Note:
 
@@ -41,7 +40,7 @@ Ada beberapa cara untuk menjalankan aplikasi ini.
 
 ### Docker Compose
 
-Repository ini sudah _Docker Ready_, anda hanya tinggal meng-pull container nya. Cek selengkapnya di [halaman ini!](https://github.com/GNZTMPZ/BOT-CLAVARIA/pkgs/container/bot-clavaria)
+Repository ini sudah _Docker Ready_, anda hanya tinggal meng-pull container nya. Cek selengkapnya di [halaman ini!](https://github.com/Clavaria-Roleplay/bot/pkgs/container/bot-clavaria)
 
 - Pastikan Docker anda sudah terinstall versi terbaru!
 - Anda hanya butuh menjalankan command:
@@ -73,12 +72,13 @@ py main.py
 ```
 
 ## Informasi Tambahan
+
 Kami sudah siapkan konfigurasi [pre-commit](https://pre-commit.com) bawaan untuk merapihkan kodingan kalian.
 
 Sangat direkomendasikan untuk menggunakan tool ini dengan menjalankan perintah berikut:
 
-1) `pip install pre-commit`
-2) `pre-commit install`
+1. `pip install pre-commit`
+2. `pre-commit install`
 
 ## License
 
