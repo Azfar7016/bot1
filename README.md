@@ -6,15 +6,40 @@ Clavaria Roleplay Discord Server Bots & UCP System made with [NAFF](https://gith
 
 Kunjungi [panduan resmi NAFF](https://naff.info/Guides/01%20Getting%20Started.html) untuk memulai.
 
+## Features
+
+- Support Unity Roleplay Database Structure, so it can be used for all U:RP gamemodes.
+- Register UCP Account, only accept UCP name without spaces and underscore. Powered by Regex systems. (e.g. ✅ `Firpanpus`, and not ❌ `Irpan_Maulidin`)
+- Set Ingame Admin, straight from your discord server
+- check player stats, model KTP
+- Resend your verification code
+- Reset your own password
+- and more features to add, still wip though
+
+
 #### Note:
 
 Tidak disarankan untuk menjalankan repository ini secara langsung tanpa merubah codingan apapun (walaupun repository ini sudah Production Ready) karena repository ini telah didesign khusus hanya untuk Clavaria Roleplay. Repository ini dibuat publik hanya untuk media belajar/referensi.
 
 ## Menjalankan Aplikasi
 
+sebelum menjalankan aplikasi ini, buatlah satu file `.env` di folder root dan isi filenya menggunakan contoh berikut
+
+```env
+PROJECT_NAME="Clavaria Helper"
+LOAD_DEBUG_COMMANDS=true # untuk production ready, ganti value ini ke false
+DISCORD_TOKEN="masukkan bot token anda disini, ambil di https://discord.com/developers/applications"
+DATABASE_HOST="masukkan mysql database host kamu disini"
+DATABASE_USER="masukkan username mysql kamu disini"
+DATABASE_PASSWORD="masukkan password mysql kamu disini"
+DATABASE_NAME="masukkan nama mysql database kamu disini"
+IP="ip server kamu, support domain dan ip"
+PORT="port server samp kamu"
+```
+
 Ada beberapa cara untuk menjalankan aplikasi ini.
 
-### Docker
+### Docker Compose
 
 Repository ini sudah _Docker Ready_, anda hanya tinggal meng-pull container nya. Cek selengkapnya di [halaman ini!](https://github.com/GNZTMPZ/BOT-CLAVARIA/pkgs/container/bot-clavaria)
 
@@ -39,20 +64,6 @@ saya anggap kalian sudah setup "virtualenv"
 
 ```bash
 pip install -r ".\requirements.txt"
-```
-
-- sebelum menjalankan kode ini, buatlah satu file `.env` di folder root dan isi filenya menggunakan contoh berikut
-
-```env
-PROJECT_NAME="Clavaria Helper"
-LOAD_DEBUG_COMMANDS=true # untuk production ready, ganti value ini ke false
-DISCORD_TOKEN="masukkan bot token anda disini, ambil di https://discord.com/developers/applications"
-DATABASE_HOST="masukkan mysql database host kamu disini"
-DATABASE_USER="masukkan username mysql kamu disini"
-DATABASE_PASSWORD="masukkan password mysql kamu disini"
-DATABASE_NAME="masukkan nama mysql database kamu disini"
-IP="ip server kamu, support domain dan ip"
-PORT="port server samp kamu"
 ```
 
 - anda sudah siap menjalankan botnya. untuk menjalankan botnya, gunakan perintah ini
