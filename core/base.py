@@ -50,7 +50,7 @@ class CustomClient(Client):
             self.logger.warning(
                 f"Command Ratelimited for {int(error.cooldown.get_cooldown_time())} seconds on: [{symbol}{ctx.invoke_target}]"
             )
-        
+
         elif isinstance(error, HTTPException):
             if isinstance(ctx, InteractionContext):
                 symbol = "/"
